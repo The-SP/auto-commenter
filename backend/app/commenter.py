@@ -1,6 +1,6 @@
-from llm_client import LLMClient
-from logger import init_logger
-from reddit_client import RedditClient
+from .llm_client import LLMClient
+from .logger import init_logger
+from .reddit_client import RedditClient
 
 logger = init_logger(__name__)
 

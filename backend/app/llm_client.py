@@ -1,8 +1,9 @@
-from config import settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
-from logger import init_logger
-from prompts import AUTO_SELECT_USER, COMMENT_GENERATION_USER, TONE_PROMPTS
+
+from .config import settings
+from .logger import init_logger
+from .prompts import AUTO_SELECT_USER, COMMENT_GENERATION_USER, TONE_PROMPTS
 
 logger = init_logger(__name__)
 

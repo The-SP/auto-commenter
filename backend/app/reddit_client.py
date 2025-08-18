@@ -1,6 +1,7 @@
 import praw
-from config import settings
-from logger import init_logger
+
+from .config import settings
+from .logger import init_logger
 
 logger = init_logger(__name__)
 
