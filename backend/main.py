@@ -1,7 +1,7 @@
 from app.logger import init_logger
+from app.routes import router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import router
 
 logger = init_logger(__name__)
 

@@ -1,10 +1,10 @@
 from typing import List
 
-from app.llm_client import LLMClient
-from app.logger import init_logger
-from app.reddit_client import RedditClient
 from fastapi import APIRouter, HTTPException
-from models import (
+
+from .llm_client import LLMClient
+from .logger import init_logger
+from .models import (
     Comment,
     GenerateCommentRequest,
     GenerateCommentResponse,
@@ -13,6 +13,7 @@ from models import (
     PostDetails,
     PostSummary,
 )
+from .reddit_client import RedditClient
 
 logger = init_logger(__name__)
 router = APIRouter()
