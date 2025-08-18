@@ -57,8 +57,8 @@ async def get_posts(subreddit: str, limit: int = 3):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/posts/{subreddit}/{post_id}", response_model=PostDetails)
-async def get_post_details(subreddit: str, post_id: str):
+@router.get("/post/{post_id}", response_model=PostDetails)
+async def get_post_details(post_id: str):
     """Fetch detailed post information with comments"""
     try:
         # Get the post using reddit client
