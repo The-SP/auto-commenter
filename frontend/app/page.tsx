@@ -1,7 +1,10 @@
 'use client';
 
 import {
+  ArrowLeft,
+  CheckCircle,
   ExternalLink,
+  Hash,
   Loader2,
   MessageCircle,
   RefreshCw,
@@ -171,20 +174,56 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Reddit Auto Commenter
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Generate AI-powered comments for Reddit posts
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container max-w-5xl mx-auto px-4 py-8 space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
+            <MessageCircle className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Reddit Auto Commenter
+            </h1>
+            <p className="text-muted-foreground text-lg mt-2">
+              Generate AI-powered comments for Reddit posts with style
+            </p>
+          </div>
+        </div>
+
+        {/* Progress Steps */}
+        <div className="flex justify-center">
+          <div className="flex items-center space-x-4">
+            {[1, 2, 3, 4, 5].map((step) => (
+              <div key={step} className="flex items-center">
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+                    currentStep >= step
+                      ? 'bg-blue-500 text-white shadow-lg'
+                      : 'bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  {currentStep > step ? (
+                    <CheckCircle className="w-4 h-4" />
+                  ) : (
+                    step
+                  )}
+                </div>
+                {step < 5 && (
+                  <div
+                    className={`w-12 h-1 mx-2 transition-all ${
+                      currentStep > step ? 'bg-blue-500' : 'bg-gray-200'
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {error && (
-          <Alert className="border-red-200 bg-red-50">
-            <AlertDescription className="text-red-800">
+          <Alert className="border-red-200 bg-red-50 shadow-sm">
+            <AlertDescription className="text-red-800 font-medium">
               {error}
             </AlertDescription>
           </Alert>
@@ -192,18 +231,29 @@ export default function Home() {
 
         {/* Step 1: Enter Subreddit */}
         {currentStep === Step.ENTER_SUBREDDIT && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Step 1: Enter Subreddit</CardTitle>
-              <CardDescription>
-                Enter the subreddit name to fetch top posts
-              </CardDescription>
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Hash className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl">Enter Subreddit</CardTitle>
+                  <CardDescription className="text-base">
+                    Choose a community to find engaging posts
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <div className="flex-1">
+            <CardContent className="space-y-6">
+              <div className="flex gap-3">
+                <div className="flex-1 relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    r/
+                  </div>
                   <Input
-                    placeholder="Enter subreddit name (e.g., python, askreddit)"
+                    className="pl-8 h-12 text-lg border-2 focus:border-blue-500 transition-colors"
+                    placeholder="python, askreddit, programming..."
                     value={subreddit}
                     onChange={(e: {
                       target: { value: SetStateAction<string> };
@@ -213,9 +263,14 @@ export default function Home() {
                     }
                   />
                 </div>
-                <Button onClick={handleSubredditSubmit} disabled={loading}>
+                <Button
+                  onClick={handleSubredditSubmit}
+                  disabled={loading || !subreddit.trim()}
+                  size="lg"
+                  className="px-8"
+                >
                   {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     'Fetch Posts'
                   )}
@@ -227,43 +282,71 @@ export default function Home() {
 
         {/* Step 2: Select Post */}
         {currentStep === Step.SELECT_POST && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Step 2: Select a Post</CardTitle>
-              <CardDescription>Top posts from r/{subreddit}</CardDescription>
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <ThumbsUp className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl">Select a Post</CardTitle>
+                    <CardDescription className="text-base">
+                      Top posts from r/{subreddit}
+                    </CardDescription>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={resetWorkflow}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Back
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {posts.map((post) => (
+              {posts.map((post, index) => (
                 <Card
                   key={post.id}
-                  className="cursor-pointer hover:shadow-md transition-shadow"
+                  className="cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 border-2"
                   onClick={() => handlePostSelect(post)}
                 >
-                  <CardContent className="pt-4">
-                    <h3 className="font-medium mb-2 line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <ThumbsUp className="w-4 h-4" />
-                        {post.score}
+                  <CardContent className="p-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-gray-100 rounded-lg p-3 text-center min-w-16">
+                        <div className="text-2xl font-bold text-gray-700">
+                          {index + 1}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <MessageCircle className="w-4 h-4" />
-                        {post.num_comments}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg mb-3 line-clamp-2 leading-relaxed">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center gap-6 text-sm">
+                          <div className="flex items-center gap-2 bg-orange-50 px-3 py-1 rounded-full">
+                            <ThumbsUp className="w-4 h-4 text-orange-600" />
+                            <span className="font-medium text-orange-800">
+                              {post.score.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full">
+                            <MessageCircle className="w-4 h-4 text-blue-600" />
+                            <span className="font-medium text-blue-800">
+                              {post.num_comments.toLocaleString()}
+                            </span>
+                          </div>
+                          <Badge variant="secondary" className="text-xs">
+                            r/{post.subreddit}
+                          </Badge>
+                        </div>
                       </div>
-                      <Badge variant="secondary">r/{post.subreddit}</Badge>
                     </div>
                   </CardContent>
                 </Card>
               ))}
-              <Button
-                variant="outline"
-                onClick={resetWorkflow}
-                className="w-full"
-              >
-                Back to Subreddit Selection
-              </Button>
             </CardContent>
           </Card>
         )}
@@ -271,103 +354,161 @@ export default function Home() {
         {/* Step 3: View Post Details */}
         {currentStep === Step.VIEW_POST && selectedPost && (
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Step 3: Post Details</CardTitle>
-                <CardDescription>
-                  Review the post content and existing comments
-                </CardDescription>
+            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <MessageCircle className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">Post Details</CardTitle>
+                      <CardDescription className="text-base">
+                        Review content and existing discussion
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentStep(Step.SELECT_POST)}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Posts
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h2 className="text-xl font-semibold mb-2">
+              <CardContent className="space-y-6">
+                {/* Post Content */}
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold leading-relaxed">
                     {selectedPost.title}
                   </h2>
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <ThumbsUp className="w-4 h-4" />
-                      {selectedPost.score}
+                  <div className="flex items-center flex-wrap gap-3">
+                    <div className="flex items-center gap-2 bg-orange-50 px-3 py-2 rounded-full">
+                      <ThumbsUp className="w-4 h-4 text-orange-600" />
+                      <span className="font-semibold text-orange-800">
+                        {selectedPost.score.toLocaleString()}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <MessageCircle className="w-4 h-4" />
-                      {selectedPost.num_comments}
+                    <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-full">
+                      <MessageCircle className="w-4 h-4 text-blue-600" />
+                      <span className="font-semibold text-blue-800">
+                        {selectedPost.num_comments.toLocaleString()}
+                      </span>
                     </div>
-                    <Badge variant="secondary">
+                    <Badge variant="secondary" className="px-3 py-1">
                       r/{selectedPost.subreddit}
                     </Badge>
                     <a
                       href={selectedPost.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-blue-600"
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium px-3 py-2 hover:bg-blue-50 rounded-full transition-colors"
                     >
                       <ExternalLink className="w-4 h-4" />
                       View Original
                     </a>
                   </div>
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <p className="whitespace-pre-wrap">
+                  <div className="bg-gray-50 border-2 border-gray-100 p-6 rounded-xl">
+                    <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
                       {selectedPost.content}
                     </p>
                   </div>
                 </div>
 
-                <Separator />
+                <Separator className="my-6" />
 
-                <div>
-                  <h3 className="font-semibold mb-3">
+                {/* Comments Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5 text-blue-600" />
                     Top Comments ({selectedPost.comments.length})
                   </h3>
-                  <div className="space-y-3">
-                    {selectedPost.comments.map((comment) => (
-                      <div
-                        key={comment.id}
-                        className="bg-gray-50 p-3 rounded-lg"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-sm">
-                            u/{comment.author}
-                          </span>
-                          <Badge variant="outline">{comment.score}</Badge>
-                        </div>
-                        <p className="text-sm">{comment.body}</p>
-                      </div>
+                  <div className="space-y-4">
+                    {selectedPost.comments.map((comment, index) => (
+                      <Card key={comment.id} className="bg-gray-50/80 border">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700">
+                                {index + 1}
+                              </div>
+                              <span className="font-semibold text-sm text-gray-700">
+                                u/{comment.author}
+                              </span>
+                            </div>
+                            <Badge variant="outline" className="bg-white">
+                              +{comment.score}
+                            </Badge>
+                          </div>
+                          <p className="text-sm leading-relaxed text-gray-800 pl-11">
+                            {comment.body}
+                          </p>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setCurrentStep(Step.SELECT_POST)}
-                  >
-                    Back to Posts
-                  </Button>
-                  <div className="flex-1 flex gap-2">
-                    <Select
-                      value={selectedTone}
-                      onValueChange={setSelectedTone}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableTones.map((tone) => (
-                          <SelectItem key={tone} value={tone}>
-                            {tone.toUpperCase()} - {getToneDescription(tone)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button onClick={handleGenerateComment} disabled={loading}>
-                      {loading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        'Generate Comment'
+                {/* Action Section */}
+                <Card className="bg-blue-50/50 border-blue-200">
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex-1">
+                          <label className="text-sm font-medium text-gray-700 mb-2 block">
+                            Comment Tone
+                          </label>
+                          <Select
+                            value={selectedTone}
+                            onValueChange={setSelectedTone}
+                          >
+                            <SelectTrigger className="h-12 bg-white border-2">
+                              <SelectValue>
+                                <div className="flex items-center justify-between w-full">
+                                  <span className="font-medium">
+                                    {selectedTone.toUpperCase()}
+                                  </span>
+                                </div>
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableTones.map((tone) => (
+                                <SelectItem key={tone} value={tone}>
+                                  <span className="font-medium">
+                                    {tone.toUpperCase()}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-end">
+                          <Button
+                            onClick={handleGenerateComment}
+                            disabled={loading}
+                            size="lg"
+                            className="px-8 h-12"
+                          >
+                            {loading ? (
+                              <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                            ) : (
+                              <MessageCircle className="w-5 h-5 mr-2" />
+                            )}
+                            Generate Comment
+                          </Button>
+                        </div>
+                      </div>
+                      {selectedTone && (
+                        <p className="text-sm text-muted-foreground px-1">
+                          {getToneDescription(selectedTone)}
+                        </p>
                       )}
-                    </Button>
-                  </div>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </CardContent>
             </Card>
           </div>
@@ -375,41 +516,61 @@ export default function Home() {
 
         {/* Step 4: Review Generated Comment */}
         {currentStep === Step.GENERATE_COMMENT && generatedComment && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Step 4: Generated Comment</CardTitle>
-              <CardDescription>
-                Review your AI-generated comment before posting
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium">
-                    Comment ({generatedComment.length} characters)
-                  </span>
-                  <Badge variant="secondary">
-                    {generatedComment.tone.toUpperCase()}
-                  </Badge>
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl">Generated Comment</CardTitle>
+                    <CardDescription className="text-base">
+                      Review before posting to Reddit
+                    </CardDescription>
+                  </div>
                 </div>
-                <Textarea
-                  value={generatedComment.comment}
-                  readOnly
-                  className="min-h-[100px]"
-                />
-              </div>
-
-              <div className="flex gap-2">
                 <Button
                   variant="outline"
                   onClick={() => setCurrentStep(Step.VIEW_POST)}
+                  size="sm"
+                  className="gap-2"
                 >
+                  <ArrowLeft className="w-4 h-4" />
                   Back to Post
                 </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-lg">Your Comment</span>
+                    <Badge variant="secondary" className="text-xs">
+                      {generatedComment.length} characters
+                    </Badge>
+                  </div>
+                  <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
+                    {generatedComment.tone.toUpperCase()}
+                  </Badge>
+                </div>
+                <Card className="bg-blue-50/50 border-blue-200">
+                  <CardContent className="p-6">
+                    <Textarea
+                      value={generatedComment.comment}
+                      readOnly
+                      className="min-h-[120px] text-base leading-relaxed bg-white border-2 resize-none"
+                    />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button
                   variant="outline"
                   onClick={handleGenerateComment}
                   disabled={loading}
+                  className="flex-1 h-12 gap-2"
                 >
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -421,13 +582,15 @@ export default function Home() {
                 <Button
                   onClick={() => handlePostComment(true)}
                   disabled={loading}
+                  size="lg"
+                  className="flex-1 h-12 gap-2"
                 >
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <Send className="w-4 h-4" />
                   )}
-                  Post Comment
+                  Post to Reddit
                 </Button>
               </div>
             </CardContent>
@@ -436,22 +599,33 @@ export default function Home() {
 
         {/* Step 5: Success */}
         {currentStep === Step.POST_COMMENT && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Step 5: Comment Posted!</CardTitle>
-              <CardDescription>
-                Your comment has been successfully posted
-              </CardDescription>
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl text-green-800">
+                    Comment Posted Successfully!
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Your AI-generated comment is now live on Reddit
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert className="border-green-200 bg-green-50">
-                <AlertDescription className="text-green-800">
-                  Comment posted successfully! Your AI-generated comment is now
-                  live on Reddit.
+            <CardContent className="space-y-6">
+              <Alert className="border-green-200 bg-green-50 shadow-sm">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <AlertDescription className="text-green-800 font-medium text-base">
+                  🎉 Your comment has been successfully posted to Reddit! The
+                  community can now engage with your AI-generated response.
                 </AlertDescription>
               </Alert>
 
-              <Button onClick={resetWorkflow} className="w-full">
+              <Button onClick={resetWorkflow} size="lg" className="w-full h-12">
+                <MessageCircle className="w-5 h-5 mr-2" />
                 Start New Comment
               </Button>
             </CardContent>
