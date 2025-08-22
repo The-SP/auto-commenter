@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 
 from .async_reddit_client import AsyncRedditClient
+from .constants import DEFAULT_COMMENT_LIMIT, DEFAULT_POST_LIMIT
 from .llm_client import LLMClient
 from .logger import init_logger
 from .models import (
@@ -43,7 +44,7 @@ async def root():
 
 
 @router.get("/posts/{subreddit}", response_model=List[PostSummary])
-async def get_posts(subreddit: str, limit: int = 3):
+async def get_posts(subreddit: str, limit: int = DEFAULT_POST_LIMIT):
     """Fetch top posts from a subreddit"""
     try:
         reddit_client = await get_reddit_client()
@@ -80,7 +81,9 @@ async def get_post_details(post_id: str):
         reddit_client = await get_reddit_client()
         post = await reddit_client.get_submission_by_id(post_id)
         post_data = await reddit_client.get_post_data(post)
-        comments_data = await reddit_client.get_top_comments(post, limit=5)
+        comments_data = await reddit_client.get_top_comments(
+            post, limit=DEFAULT_COMMENT_LIMIT
+        )
 
         # Convert to response model
         comments = [
@@ -114,8 +117,8 @@ async def get_post_details(post_id: str):
 async def get_available_tones():
     """Get available comment tones"""
     try:
-        reddit_client = await get_llm_client()
-        tones = reddit_client.get_available_tones()
+        llm_client = await get_llm_client()
+        tones = llm_client.get_available_tones()
         return tones
     except Exception as e:
         logger.error(f"Error fetching tones: {e}")
@@ -132,7 +135,9 @@ async def generate_comment(request: GenerateCommentRequest):
         # Get post data
         post = await reddit_client.get_submission_by_id(request.post_id)
         post_data = await reddit_client.get_post_data(post)
-        comments_data = await reddit_client.get_top_comments(post, limit=5)
+        comments_data = await reddit_client.get_top_comments(
+            post, limit=DEFAULT_COMMENT_LIMIT
+        )
 
         # Check if post is suitable
         relevance = llm_client.analyze_post_relevance(post_data)

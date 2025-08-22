@@ -1,6 +1,14 @@
 import asyncpraw
 
 from .config import settings
+from .constants import (
+    DEFAULT_COMMENT_LIMIT,
+    DEFAULT_DRY_RUN,
+    DEFAULT_POST_LIMIT,
+    DELETED_CONTENT,
+    LINK_POST_PLACEHOLDER,
+    MAX_COMMENT_LENGTH,
+)
 from .logger import init_logger
 
 logger = init_logger(__name__)
@@ -39,7 +47,7 @@ class AsyncRedditClient:
         """Close the Reddit session"""
         await self.reddit.close()
 
-    async def get_top_posts(self, subreddit_name, limit=3):
+    async def get_top_posts(self, subreddit_name, limit=DEFAULT_POST_LIMIT):
         """Get top posts from subreddit in last 24 hours"""
         try:
             subreddit = await self.reddit.subreddit(subreddit_name)
@@ -57,14 +65,14 @@ class AsyncRedditClient:
         return {
             "id": post.id,
             "title": post.title,
-            "content": post.selftext if post.selftext else "[Link/Image Post]",
+            "content": post.selftext if post.selftext else LINK_POST_PLACEHOLDER,
             "url": post.url,
             "score": post.score,
             "num_comments": post.num_comments,
             "subreddit": str(post.subreddit),
         }
 
-    async def get_top_comments(self, post, limit=5):
+    async def get_top_comments(self, post, limit=DEFAULT_COMMENT_LIMIT):
         """Get top x comments from a post"""
         try:
             await post.comments.replace_more(limit=0)  # Remove "load more comments"
@@ -72,10 +80,7 @@ class AsyncRedditClient:
             comment_data = []
             for comment in post.comments[:limit]:
                 # Skip deleted/removed comments
-                if hasattr(comment, "body") and comment.body not in [
-                    "[deleted]",
-                    "[removed]",
-                ]:
+                if hasattr(comment, "body") and comment.body not in DELETED_CONTENT:
                     comment_data.append(
                         {
                             "id": comment.id,
@@ -95,13 +100,18 @@ class AsyncRedditClient:
             logger.error(f"Failed to fetch comments for post {post.id}: {e}")
             return []
 
-    async def get_post_with_comments(self, post, comment_limit=5):
+    async def get_post_with_comments(self, post, comment_limit=DEFAULT_COMMENT_LIMIT):
         """Get post data along with its top comments"""
         post_data = await self.get_post_data(post)
         post_data["comments"] = await self.get_top_comments(post, comment_limit)
         return post_data
 
-    async def analyze_subreddit(self, subreddit_name, post_limit=3, comment_limit=5):
+    async def analyze_subreddit(
+        self,
+        subreddit_name,
+        post_limit=DEFAULT_POST_LIMIT,
+        comment_limit=DEFAULT_COMMENT_LIMIT,
+    ):
         """Get posts and their comments for analysis"""
         posts = await self.get_top_posts(subreddit_name, post_limit)
         analyzed_posts = []
@@ -113,7 +123,7 @@ class AsyncRedditClient:
         logger.info(f"Analyzed {len(analyzed_posts)} posts from r/{subreddit_name}")
         return analyzed_posts
 
-    async def post_comment(self, post_id, comment_text, dry_run=False):
+    async def post_comment(self, post_id, comment_text, dry_run=DEFAULT_DRY_RUN):
         """
         Post a comment to a Reddit submission
 
@@ -149,8 +159,10 @@ class AsyncRedditClient:
             if not comment_text or not comment_text.strip():
                 raise ValueError("Comment text cannot be empty")
 
-            if len(comment_text) > 10000:  # Reddit's comment limit
-                raise ValueError("Comment text too long (max 10,000 characters)")
+            if len(comment_text) > MAX_COMMENT_LENGTH:
+                raise ValueError(
+                    f"Comment text too long (max {MAX_COMMENT_LENGTH:,} characters)"
+                )
 
             # Post the comment
             comment = await submission.reply(comment_text)

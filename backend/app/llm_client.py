@@ -2,6 +2,15 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from .config import settings
+from .constants import (
+    DEFAULT_TEMPERATURE,
+    DELETED_CONTENT,
+    MAX_LLM_TOKENS,
+    MIN_COMMENT_LENGTH,
+    MIN_POST_COMMENTS,
+    MIN_POST_SCORE,
+    MIN_TITLE_LENGTH,
+)
 from .logger import init_logger
 from .prompts import AUTO_SELECT_USER, COMMENT_GENERATION_USER, TONE_PROMPTS
 
@@ -16,8 +25,8 @@ class LLMClient:
         self.llm = ChatGoogleGenerativeAI(
             model=settings.GEMINI_MODEL,
             google_api_key=settings.GEMINI_API_KEY,
-            temperature=0.7,
-            max_tokens=1000,
+            temperature=DEFAULT_TEMPERATURE,
+            max_tokens=MAX_LLM_TOKENS,
         )
         logger.info(
             f"Initialized Gemini LLM client with model: {settings.GEMINI_MODEL}"
@@ -73,7 +82,7 @@ class LLMClient:
             comment_text = response.content.strip()
 
             # Basic validation
-            if len(comment_text) < 10:
+            if len(comment_text) < MIN_COMMENT_LENGTH:
                 raise ValueError("Generated comment too short")
 
             logger.info(f"Generated {tone} comment: {comment_text}")
@@ -93,15 +102,18 @@ class LLMClient:
         """Analyze if a post is suitable for commenting"""
 
         # Skip very low engagement posts
-        if post_data["score"] < 5 and post_data["num_comments"] < 3:
+        if (
+            post_data["score"] < MIN_POST_SCORE
+            and post_data["num_comments"] < MIN_POST_COMMENTS
+        ):
             return {"suitable": False, "reason": "Low engagement (score/comments)"}
 
         # Skip deleted/removed content
-        if post_data["content"] in ["[deleted]", "[removed]", ""]:
+        if post_data["content"] in DELETED_CONTENT:
             return {"suitable": False, "reason": "No content available"}
 
         # Check title length (avoid very short titles)
-        if len(post_data["title"]) < 10:
+        if len(post_data["title"]) < MIN_TITLE_LENGTH:
             return {"suitable": False, "reason": "Title too short"}
 
         return {"suitable": True, "reason": "Post appears suitable for commenting"}

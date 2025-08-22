@@ -11,10 +11,6 @@ class Settings:
     REDDIT_USERNAME = config("REDDIT_USERNAME")
     REDDIT_PASSWORD = config("REDDIT_PASSWORD")
 
-    # Bot settings
-    MAX_POSTS = config("MAX_POSTS", default=3, cast=int)
-    DEFAULT_SUBREDDIT = config("DEFAULT_SUBREDDIT", default="python")
-
     # Future: Gemini API
     GEMINI_API_KEY = config("GEMINI_API_KEY")
     GEMINI_MODEL = config("GEMINI_MODEL", default="gemini-2.0-flash")
