@@ -31,7 +31,7 @@ class AsyncRedditClient:
             )
             self.can_post = True
             logger.info(
-                f"Initialized async client with posting capabilities for: {settings.REDDIT_USERNAME}"
+                f"Initialized async reddit client with posting capabilities for: {settings.REDDIT_USERNAME}"
             )
         else:
             # Read-only mode
