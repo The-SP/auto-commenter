@@ -33,3 +33,20 @@ A FastAPI application that analyzes Reddit posts and generates contextual AI-pow
    ```
 
 - The API will be accessible at `http://localhost:8000`.
+
+## Command Line Tools
+
+**Interactive CLI Commenter** (with human oversight):
+
+```bash
+cd backend
+uv run -m app.cli_commenter
+```
+
+**Automated Commenter** (for scheduled/automatic posting):
+
+```bash
+cd backend
+uv run -m app.auto_commenter        # dry run mode (default)
+uv run -m app.auto_commenter --live # live posting mode
+```
