@@ -21,7 +21,7 @@ SUBREDDITS = ["AskReddit", "askmen", "YouShouldKnow", "programming", "todayilear
 
 TONES = ["auto", "funny", "analytical", "controversial"]
 
-ENABLE_POSTING_HOURS = (9, 18)  # 9 AM to 6 PM
+ENABLE_POSTING_HOURS = (7, 9)  # 7 AM to 9 AM
 
 logger = init_logger(__name__)
 

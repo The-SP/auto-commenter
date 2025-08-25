@@ -50,3 +50,19 @@ cd backend
 uv run -m app.auto_commenter        # dry run mode (default)
 uv run -m app.auto_commenter --live # live posting mode
 ```
+
+## Scheduled Automation
+
+**Set up daily automated commenting:**
+
+```bash
+cd backend
+chmod + x ./app/daily_commenter.sh
+./app/daily_commenter.sh  # Sets up daily cron job at 7:00 AM
+```
+
+The script will automatically run `auto_commenter.py` daily, posting AI-generated comments to random subreddits. Monitor activity with:
+
+```bash
+tail -f /tmp/temp.log
+```
