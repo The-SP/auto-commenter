@@ -1,8 +1,8 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from .config import settings
-from .constants import (
+from app.core.config import settings
+from app.core.constants import (
     DEFAULT_TEMPERATURE,
     DELETED_CONTENT,
     MAX_LLM_TOKENS,
@@ -11,8 +11,8 @@ from .constants import (
     MIN_POST_SCORE,
     MIN_TITLE_LENGTH,
 )
-from .logger import init_logger
-from .prompts import AUTO_SELECT_USER, COMMENT_GENERATION_USER, TONE_PROMPTS
+from app.core.logger import init_logger
+from app.services.prompts import AUTO_SELECT_USER, COMMENT_GENERATION_USER, TONE_PROMPTS
 
 logger = init_logger(__name__)
 
@@ -49,7 +49,9 @@ class LLMClient:
         if existing_comments:
             comments_section = "\n\nTop existing comments:\n"
             for i, comment in enumerate(existing_comments, 1):
-                comments_section += f"{i}. [{comment['score']}] {comment['body']}...\n"
+                comments_section += (
+                    f"{i}. [{comment['score']}] {comment['body']}app..\n"
+                )
 
         # Use appropriate prompt template
         if tone == "auto":

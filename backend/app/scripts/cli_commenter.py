@@ -5,10 +5,10 @@ Posts AI-generated comments to Reddit with human oversight
 
 import asyncio
 
-from .async_reddit_client import AsyncRedditClient
-from .constants import DEFAULT_COMMENT_LIMIT, DEFAULT_POST_LIMIT
-from .llm_client import LLMClient
-from .logger import init_logger
+from app.core.constants import DEFAULT_COMMENT_LIMIT, DEFAULT_POST_LIMIT
+from app.core.logger import init_logger
+from app.services.async_reddit_client import AsyncRedditClient
+from app.services.llm_client import LLMClient
 
 logger = init_logger(__name__)
 
@@ -139,7 +139,7 @@ async def get_post_with_comments(post, post_data):
     try:
         reddit_client = await get_reddit_client()
 
-        print("\nFetching comments for selected post...")
+        print("\nFetching comments for selected postapp..")
         comments_data = await reddit_client.get_top_comments(
             post, limit=DEFAULT_COMMENT_LIMIT
         )
@@ -164,7 +164,7 @@ async def generate_comment_for_post(post_data, tone: str):
             if not get_yes_no("Continue anyway? (y/n): "):
                 return None
 
-        print(f"\n🤖 Generating {tone} comment...")
+        print(f"\n🤖 Generating {tone} commentapp..")
         result = llm_client.generate_comment(
             post_data, post_data["comments"], tone=tone
         )
@@ -185,7 +185,7 @@ async def post_comment_to_reddit(post_data, comment_text, dry_run: bool = True):
         reddit_client = await get_reddit_client()
 
         action = "🔥 DRY RUN -" if dry_run else "🚀"
-        print(f"\n{action} Posting comment...")
+        print(f"\n{action} Posting commentapp..")
 
         result = await reddit_client.post_comment(
             post_data["id"], comment_text, dry_run=dry_run
@@ -220,7 +220,7 @@ async def main():
             return
 
         # Get top posts
-        print(f"\nFetching top posts from r/{subreddit}...")
+        print(f"\nFetching top posts from r/{subreddit}app..")
         try:
             posts, posts_data = await get_posts_from_subreddit(subreddit)
         except Exception as e:
@@ -282,7 +282,7 @@ async def main():
         logger.info(f"""
 Comment Session Summary:
 - Subreddit: r/{subreddit}
-- Post: {selected_post_data["title"][:60]}...
+- Post: {selected_post_data["title"][:60]}app..
 - Post Score: {selected_post_data["score"]}
 - Post Comments: {selected_post_data["num_comments"]}
 - Tone: {result["tone"]}

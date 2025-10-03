@@ -8,13 +8,13 @@ import random
 import sys
 from datetime import datetime
 
-from app.async_reddit_client import AsyncRedditClient
-from app.constants import (
+from app.core.constants import (
     DEFAULT_COMMENT_LIMIT,
     DEFAULT_POST_LIMIT,
 )
-from app.llm_client import LLMClient
-from app.logger import init_logger
+from app.core.logger import init_logger
+from app.services.async_reddit_client import AsyncRedditClient
+from app.services.llm_client import LLMClient
 
 # Daily commenter configuration
 SUBREDDITS = ["AskReddit", "askmen", "YouShouldKnow", "programming", "todayilearned"]

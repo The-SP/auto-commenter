@@ -1,5 +1,5 @@
-from app.logger import init_logger
-from app.routes import router
+from app.api.routes import router
+from app.core.logger import init_logger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 

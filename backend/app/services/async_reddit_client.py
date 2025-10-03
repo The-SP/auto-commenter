@@ -1,7 +1,7 @@
 import asyncpraw
 
-from .config import settings
-from .constants import (
+from app.core.config import settings
+from app.core.constants import (
     DEFAULT_COMMENT_LIMIT,
     DEFAULT_DRY_RUN,
     DEFAULT_POST_LIMIT,
@@ -9,7 +9,7 @@ from .constants import (
     LINK_POST_PLACEHOLDER,
     MAX_COMMENT_LENGTH,
 )
-from .logger import init_logger
+from app.core.logger import init_logger
 
 logger = init_logger(__name__)
 
@@ -144,7 +144,7 @@ class AsyncRedditClient:
 
         if dry_run:
             logger.info(f"DRY RUN - Would post comment to {post_id}:")
-            logger.info(f"Comment: {comment_text[:100]}...")
+            logger.info(f"Comment: {comment_text[:100]}app..")
             return {
                 "success": True,
                 "comment_id": "dry_run_comment",

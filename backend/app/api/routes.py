@@ -2,11 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, HTTPException
 
-from .async_reddit_client import AsyncRedditClient
-from .constants import DEFAULT_COMMENT_LIMIT, DEFAULT_POST_LIMIT
-from .llm_client import LLMClient
-from .logger import init_logger
-from .models import (
+from app.api.models import (
     Comment,
     GenerateCommentRequest,
     GenerateCommentResponse,
@@ -15,6 +11,10 @@ from .models import (
     PostDetails,
     PostSummary,
 )
+from app.core.constants import DEFAULT_COMMENT_LIMIT, DEFAULT_POST_LIMIT
+from app.core.logger import init_logger
+from app.services.async_reddit_client import AsyncRedditClient
+from app.services.llm_client import LLMClient
 
 logger = init_logger(__name__)
 router = APIRouter()
